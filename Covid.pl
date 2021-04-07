@@ -180,6 +180,44 @@ removeVacinados([H|T], R, [H|L]) :- nao(contains(H, T)) , removeVacinados(T, R, 
 % 'utentes2toma': Resultado -> {V, F}
 utentes2toma(R) :- solucoes(ID,vacinacao_Covid(ID_Staff,ID,Dia,Mes,Ano,Vacina,2),L2Toma),solucoes(IDU,vacinacao_Covid(ID_Staff,IDU,Dia,Mes,Ano,Vacina,Toma),LVacinados), removeVacinados(LVacinados,L2Toma,R).
 
+
+% Extensão do predicado que permite identificar criterios da 1ª fase
+% 'criterios1fase': Resultado -> {V, F}
+criterios1fase(Idade,Profissao,LDoencas) :- Idade >= 80.
+criterios1fase(Idade,Profissao,LDoencas) :- profissaoRisco(Profissao).
+criterios1fase(Idade,Profissao,LDoencas) :- listaDoencas(LDoencas), Idade >= 50.
+
+% Extensão do predicado que permite identificar criterios da 2ª fase
+% 'criterios2fase': Resultado -> {V, F}
+criterios2fase(Idade,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),Idade >= 65, Idade < 80.
+criterios2fase(Idade,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),listaDoencas2(LDoencas), Idade >= 50, Idade < 65.
+
+% Extensão do predicado que permite identificar criterios da 3ª fase
+% 'criterios3fase': Resultado -> {V, F}
+criterios3fase(Idade,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), Idade < 50.
+criterios3fase(Idade,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),not(listaDoencas2(LDoencas)), Idade >= 50, Idade < 65.
+
+listaDoencas([H|T]) :- doencaRisco(H).
+listaDoencas([H|T]) :- not(doencaRisco(H)), listaDoencas(T).
+
+listaDoencas2([H|T]) :- doencaRisco2(H).
+listaDoencas2([H|T]) :- not(doencaRisco2(H)), listaDoencas2(T).
+
+doencaRisco('Insuficiência cardíaca').
+doencaRisco('Doença coronária').
+doencaRisco('Insuficiência renal').
+doencaRisco('Doença respiratória').
+
+doencaRisco2('Diabetes').
+doencaRisco2('Insuficiência hepática').
+doencaRisco2('Hipertensão arterial').
+doencaRisco2('Obesidade').
+
+profissaoRisco('Médico').
+profissaoRisco('Militar').
+profissaoRisco('Segurança').
+profissaoRisco('Residente de lar de idosos').
+
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 evolucao( Termo ) :-
