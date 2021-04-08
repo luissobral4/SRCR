@@ -130,9 +130,6 @@ vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
 % Invariante: nao admitir mais de duas tomas da vacina
 +vacinacao_Covid(_,_,_,_,_,_,Toma):: contains(Toma,[1,2]).
 
-% Invariante: nao admitir segunda toma da vacina sem tomar a primeira
-+vacinacao_Covid(_,ID_Utente,_,_,_,_,2):: vacinacao_Covid(_,ID_Utente,_,_,_,_,1).
-
 % Invariante: nao admitir segunda toma da vacina diferente da primeira
 +vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,2):: vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,1).
 
@@ -317,9 +314,15 @@ utentesNVacinados(R) :- solucoes(ID,(utente(ID,_,_,_,_,_,_,_,_,_),utentesVacinad
 % 'utentesVacinadosInd': Resultado -> {V, F}
 utentesVacinadosInd(R) :- utentesInd1(L1),utentesInd2(L2),concat(L1,L2,L),utentesInd3(L3),concat(L, L3, R).
 
-utentesInd1(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes1fase(UF1),vacinados2fase(VF1),contains(ID,UF1),contains(ID,VF1)), L2), solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes1fase(UF2),vacinados3fase(VF2),contains(ID,UF2),contains(ID,VF2)), L3), concat(L2,L3,R).
-utentesInd2(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes2fase(UF1),vacinados1fase(VF1),contains(ID,UF1),contains(ID,VF1)), L1), solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes2fase(UF2),vacinados3fase(VF2),contains(ID,UF2),contains(ID,VF2)), L3), concat(L1,L3,R).
-utentesInd3(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes3fase(UF1),vacinados1fase(VF1),contains(ID,UF1),contains(ID,VF1)), L1), solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes3fase(UF2),vacinados2fase(VF2),contains(ID,UF2),contains(ID,VF2)), L2), concat(L1,L2,R).
+utentesInd1(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes1fase(UF1),vacinados2fase(VF1),contains(ID,UF1),contains(ID,VF1)), L2), 
+				  solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes1fase(UF2),vacinados3fase(VF2),contains(ID,UF2),contains(ID,VF2)), L3), 
+				  concat(L2,L3,R).
+utentesInd2(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes2fase(UF1),vacinados1fase(VF1),contains(ID,UF1),contains(ID,VF1)), L1), 
+				  solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes2fase(UF2),vacinados3fase(VF2),contains(ID,UF2),contains(ID,VF2)), L3), 
+				  concat(L1,L3,R).
+utentesInd3(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes3fase(UF1),vacinados1fase(VF1),contains(ID,UF1),contains(ID,VF1)), L1), 
+                  solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes3fase(UF2),vacinados2fase(VF2),contains(ID,UF2),contains(ID,VF2)), L2), 
+				  concat(L1,L2,R).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % IDENTIFICAR PESSOAS NÃO VACINADAS E QUE SÃO CANDIDATAS
