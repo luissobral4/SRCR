@@ -2,9 +2,8 @@
 
 
 % SICStus PROLOG: Declaracoes iniciais
-:- set_prolog_flag( discontiguous_warnings,off ).
-:- set_prolog_flag( single_var_warnings,off ).
-:- set_prolog_flag( unknown,fail ).
+:- style_check(-discontiguous).
+:- style_check(-singleton).
 
 % Definicoes iniciais
 
@@ -20,15 +19,15 @@
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 % Extensao do predicado utente : ID Utente, Segurança_Social, Nome, Data_Nasc, Email, Telefone, Morada, Profissão, LDoencas, CentroSaúde -> {V,F}
-utente(1,21455655,'Luís',1970,'luis@gmail.com',936696454,'Adaúfe','Estudante',['Doença coronária','Doença respiratória'],1). % mais 50 e doença 1 - fase 1
-utente(2,31455655,'Filipe',1969,'filipe@gmail.com',936696100,'Barcelos','Estudante',['Diabetes'],1). % mais 50 e doença 2 - fase 2
-utente(3,41455655,'José',1990,'j@gmail.com',936696151,'Esposende','Estudante',[],1). % menos de 50 - fase 3
-utente(4,42455655,'Diogo',1998,'d@gmail.com',936696171,'Aveiro','Estudante',['Doença coronária'],1). % menos de 50 e doença 1 - fase 3
-utente(5,43455655,'Rui',1936,'r@gmail.com',936696190,'Braga','Estudante',['Diabetes'],1). % mais de 80 - fase 1
-utente(6,41454355,'Paulo',1980,'p@gmail.com',936738461,'Esposende','Medico',[],2). % medico - fase 1
-utente(7,75355655,'Beatriz',1995,'b@gmail.com',936973645,'Aveiro','Enfermeiro',[],2). % enfermeiro - fase 1
-utente(8,43455692,'Maria',1951,'m@gmail.com',93718248,'Braga','Estudante',[],2). % 65 a 80 - fase 2
-utente(9,42487435,'Carlos',1983,'c@gmail.com',936827634,'Aveiro','Estudante',['Arteroses'],2). % doença invalida - fase 3
+utente(1,21455655,'Luís',1970,'luis@gmail.com',936696454,'Adaúfe','Estudante',['Doença coronária','Doença respiratória'],1).
+utente(2,31455655,'Filipe',1969,'filipe@gmail.com',936696100,'Barcelos','Estudante',['Diabetes'],1). 
+utente(3,41455655,'José',1990,'j@gmail.com',936696151,'Esposende','Estudante',[],1).
+utente(4,42455655,'Diogo',1998,'d@gmail.com',936696171,'Aveiro','Estudante',['Doença coronária'],1).
+utente(5,43455655,'Rui',1936,'r@gmail.com',936696190,'Braga','Estudante',['Diabetes'],1).
+utente(6,41454355,'Paulo',1980,'p@gmail.com',936738461,'Esposende','Medico',[],2).
+utente(7,75355655,'Beatriz',1995,'b@gmail.com',936973645,'Aveiro','Enfermeiro',[],2).
+utente(8,43455692,'Maria',1951,'m@gmail.com',912348248,'Braga','Estudante',[],2).
+utente(9,42487435,'Carlos',1983,'c@gmail.com',936827634,'Aveiro','Estudante',['Arteroses'],2).
 
 % Extensao do predicado 'centro_saude' : ID Centro, Nome, Morada, Telefone, 
 % Email -> {V,F}
@@ -45,108 +44,145 @@ staff(4,2,'João','joao@gmail.com').
 % Utente 1 - 2 vacinas fase 1
 vacinacao_Covid(1, 1, 11, 1, 2021, 'AstraZeneca', 1).
 vacinacao_Covid(1, 1, 11, 4, 2021, 'AstraZeneca', 2).
-% Utente 2 - 1 vacina fase 2
 vacinacao_Covid(3, 2, 30, 5, 2021, 'Moderna', 1).
-% Utente 3 - 1 vacina fase 2 (mal vacinado)
 vacinacao_Covid(2, 3, 12, 5, 2021, 'PFizer', 1).
-% Utente 4 - 2 vacinas fase 3
 vacinacao_Covid(1, 4, 11, 11, 2021, 'Moderna', 1).
 vacinacao_Covid(1, 4, 14, 12, 2021, 'Moderna', 2).
-% Utente 5 - não vacinado
-% Utente 6 - 2 vacinas fase 1
 vacinacao_Covid(4, 6, 12, 2, 2021, 'PFizer', 1).
 vacinacao_Covid(4, 6, 12, 3, 2021, 'PFizer', 2).
-% Utente 7 - 1 vacina fase 1
-vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 1).
-% Utente 8 - não vacinado
-% Utente 9 - não vacinado
+vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % INVARIANTES
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-% Invariante Estrutural:  nao permite a insercao de conhecimento repetido
-+utente(ID,Q,Nome,Da,E,T,M,P,D,C)::
-	(solucoes((ID,Q,Nome,Da,E,T,M,P,D,C),utente(ID,Q,Nome,Da,E,T,M,P,D,C),Lista),
+% Invariante:  nao permite a insercao de conhecimento repetido
++utente(ID,_,_,_,_,_,_,_,_,_)::
+	(solucoes(ID,utente(ID,_,_,_,_,_,_,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
-+centro_saude(Id,Nome,Morada,Tel,Email)::
-	(solucoes((Id,Nome,Morada,Tel,Email),centro_saude(Id,Nome,Morada,Tel,Email),Lista),
++utente(_,SS,_,_,_,_,_,_,_,_)::
+	(solucoes(SS,utente(_,SS,_,_,_,_,_,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
-+staff(Id,IdCentro,Nome,Email)::
-	(solucoes((Id,IdCentro,Nome,Email),staff(Id,IdCentro,Nome,Email),Lista),
++utente(_,_,_,_,E,_,_,_,_,_)::
+	(solucoes(E,utente(_,_,_,_,E,_,_,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
-+vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)::
-	(solucoes((ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma),vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma),Lista),
++utente(_,_,_,_,_,T,_,_,_,_)::
+	(solucoes(T,utente(_,_,_,_,_,T,_,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
-% Invariante Referencial: nao admite ids repetidos
-
-+utente(ID,Q,Nom,Data,E,T,M,P,D,C)::
-	(solucoes(ID,utente(ID,Ns,Nome,Dat,Em,Tel,Mor,Pr,Dc,Cs),Lista),
++centro_saude(ID,_,_,_,_)::
+	(solucoes(ID,centro_saude(ID,_,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
-+centro_saude(Id,Nome,Morada,Tel,Email)::
-	(solucoes(Id,centro_saude(Id,No,Mor,Te,Ema),Lista),
++centro_saude(_,_,_,T,_)::
+	(solucoes(T,centro_saude(_,_,_,T,_),Lista),
 	comprimento(Lista,N), N==1).
 
-+staff(Id,IdCentro,Nome,Email)::
-	(solucoes(Id,staff(Id,IdC,N,E),Lista),
++centro_saude(_,_,_,_,E)::
+	(solucoes(E,centro_saude(_,_,_,_,E),Lista),
 	comprimento(Lista,N), N==1).
 
-+vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)::
-	(solucoes((ID_Utente,Toma)
-			   vacinacao_Covid(ID,ID_Utente,D,M,A,V,Toma),
-			   Lista),
++staff(ID,_,_,_)::
+	(solucoes(ID,staff(ID,_,_,_),Lista),
 	comprimento(Lista,N), N==1).
 
++staff(_,_,_,E)::
+	(solucoes(E,staff(_,_,_,E),Lista),
+	comprimento(Lista,N), N==1).
 
-% Invariante Referencial: nao admitir vacinas associadas a uma data inválida
-+vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma):: data(Ano, Mes, Dia).
++vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma)::
+	(solucoes((ID_Utente,Toma),vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma),Lista),
+	comprimento(Lista,N), N==1).
 
-% Invariante Referencial: nao admitir vacinas associadas um staff ou utente inválido
-+vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma):: (utente(ID_Utente,Q,No,Da,E,T,M,P,D,C),staff(ID_Staff,IdCentro,Nome,Email)).
+% Invariante:  nao permite a remoção de conhecimento inexistente
+-utente(ID,_,_,_,_,_,_,_,_,_)::
+	(solucoes(ID,utente(ID,_,_,_,_,_,_,_,_,_),Lista),
+	comprimento(Lista,N), N==1).
 
-% Invariante Referencial: nao admitir utentes associados um centro de saúde inválido
-+utente(ID_Utente,Q,N,Da,E,T,M,P,D,ID_Centro):: (centro_saude(ID_Centro,Nome,Morada,Tel,Email)).
+-centro_saude(ID,_,_,_,_)::
+	(solucoes(ID,centro_saude(ID,_,_,_,_),Lista),
+	comprimento(Lista,N), N==1).
 
-% Invariante Referencial: nao admitir utentes com telefone inválido
-+utente(ID_Utente,Q,N,Da,E,T,M,P,D,ID_Centro):: telefone(T).
+-staff(ID,_,_,_)::
+	(solucoes((ID,_,_,_),staff(ID,_,_,_),Lista),
+	comprimento(Lista,N), N==1).
 
+-vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma)::
+	(solucoes((ID_Utente,Toma),vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma),Lista),
+	comprimento(Lista,N), N==1).
 
-% Invariante: Telefone tem que ser válido
-+centro_saude(Id,Nome,Morada,Tel,Email) :- Tel >= 900000000, Tel <= 999999999.
 
 % Invariante: IDs têm que ser números naturais
-+utente(ID,Q,No,Da,E,T,M,P,D,C) :- natural(ID).
-+centro_saude(Id,Nome,Morada,Tel,Email) :- natural(ID).
-+staff(Id,IdCentro,Nome,Email) :- natural(ID).
++utente(ID,_,_,_,_,_,_,_,_,_):: natural(ID).
++centro_saude(ID,_,_,_,_):: natural(ID).
++staff(ID,_,_,_):: natural(ID).
 
--utente(ID,Q,N,D,E,T,M,P,D,C)::
-	(solucoes(ID,utente(ID,Q,Ns,D,E,T,M,P,D,C),Lista),
-	comprimento(Lista,N), N==1).
 
--centro_saude(Id,Nome,Morada,Tel,Email)::
-	(solucoes(Id,centro_saude(Id,Nome,Morada,Tel,Email),Lista),
-	comprimento(Lista,N), N==1).
+% Invariante: nao admitir vacinas associadas a uma data inválida
++vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma):: data(Ano, Mes, Dia).
 
+% Invariante: nao admitir vacinas associadas um staff ou utente inválido
++vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma):: (utente(ID_Utente,Q,No,Da,E,T,M,P,D,C),staff(ID_Staff,IdCentro,Nome,Email)).
+
+% Invariante: nao admitir mais de duas tomas da vacina
++vacinacao_Covid(_,_,_,_,_,_,Toma):: contains(Toma,[1,2]).
+
+% Invariante: nao admitir segunda toma da vacina sem tomar a primeira
++vacinacao_Covid(_,ID_Utente,_,_,_,_,2):: vacinacao_Covid(_,ID_Utente,_,_,_,_,1).
+
+% Invariante: nao admitir segunda toma da vacina diferente da primeira
++vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,2):: vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,1).
+
+% Invariante: nao admitir utentes associados um centro de saúde inválido
++utente(_,_,_,_,_,_,_,_,_,ID_Centro):: (centro_saude(ID_Centro,_,_,_,_)).
+
+% Invariante: nao admitir utentes com telefone inválido
++utente(_,_,_,_,_,Tel,_,_,_,_):: telefone(Tel).
+
+% Invariante: Telefone tem que ser válido
++centro_saude(_,_,_,Tel,_):: telefone(Tel).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% remover utentes, CentroSaúde , staff e Vacinas:
+% EVOLUÇÃO DE CONHECIMENTO
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-removeUtente(ID,Q,No,Da,E,T,M,P,D,C) :- involucao(utente(ID,Q,No,Da,E,T,M,P,D,C)).
+% Extensao do predicado que permite a evolução do conhecimento
+evolucao( Termo ) :-
+    solucoes( Invariante,+Termo::Invariante,Lista ),
+    insercao( Termo ),
+    teste( Lista ).
 
-removeCentro(ID,N,M,T,E) :- involucao(centro_saude(ID,N,M,T,E)).
+insercao( Termo ) :-
+    assert( Termo ).
+insercao( Termo ) :-
+    retract( Termo ),!,fail.
 
-removeStaff(ID,IdCentro,Nome,Email) :- involucao(staff(ID,IdCentro,Nome,Email)).
-
-removeVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- involucao(vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)).
+teste( [] ).
+teste( [R|LR] ) :-
+    R,
+    teste( LR ).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% adicionar utentes, CentroSaúde , staff e Vacinas:
+% INVOLUÇÃO DE CONHECIMENTO
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+% Extensao do predicado que permite a involucao do conhecimento
+involucao( Termo ) :-
+    solucoes( Invariante,-Termo::Invariante,Lista ),
+	teste( Lista ),
+    remocao( Termo ).
+    
+
+remocao( Termo ) :-
+    retract( Termo ).
+remocao( Termo ) :-
+    assert( Termo ),!,fail.
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% ADIÇÃO DE CONHECIMENTO
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
@@ -157,24 +193,29 @@ registaStaff(ID,IdCentro,Nome,Email) :- evolucao(staff(ID,IdCentro,Nome,Email)).
 
 registaVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- evolucao(vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)).
 
-
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% IDENTIFICAR UTENTES/VACINAS/CENTROS/STAFF POR CRITÉRIOS DE SELEÇÃO
+% REMOÇÃO DE CONHECIMENTO
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-vacinas(R) :- solucoes((ID,IDU,D,M,A,V,T), vacinacao_Covid(ID,IDU,D,M,A,V,T), R).
+removeUtente(ID) :- vacinasUtente(ID,R), removeVacinasUtente(R), involucao(utente(ID,_,_,_,_,_,_,_,_,_)).
 
-staffID(ID,R) :- solucoes((ID,I,N,E), staff(ID,I,N,E), R).
+vacinasUtente(ID,R) :- solucoes(ID, (vacinacao_Covid(_,ID,_,_,_,_,_)), R).
 
-centroID(ID,R) :- solucoes((ID,N,M,T,E), centro_saude(ID,N,M,T,E), R).
+removeVacinasUtente([]).
+removeVacinasUtente([ID|T]) :- involucao(vacinacao_Covid(ID_Staff,ID,D,M,A,Vacina,Toma)), removeVacinasUtente(T).
 
-centroT(R) :- solucoes((ID,N,M,T,E), centro_saude(ID,N,M,T,E), R).
 
-utenteT(R) :- solucoes((ID,Q,No,Da,E,T,M,P,D,C), utente(ID,Q,No,Da,E,T,M,P,D,C), R).
+removeCentro(ID) :- staffCentro(ID,R), removeStaffCentro(R), involucao(centro_saude(ID,_,_,_,_)).
 
-lVacinados(R) :- solucoes(ID,vacinacao_Covid(_,ID,_,_,_,_,1),R).
+staffCentro(ID,R) :- solucoes(ID_Staff, (staff(ID_Staff,ID,_,_)), R).
 
-lUtentes(R) :- solucoes(IDU,utente(IDU,_,_,_,_,_,_,_,_,_),R).
+removeStaffCentro([]).
+removeStaffCentro([ID|T]) :- involucao(staff(ID,_,_,_)), removeStaffCentro(T).
+
+
+removeStaff(ID) :- involucao(staff(ID,_,_,_)).
+
+removeVacina(ID_Utente,Toma) :- involucao(vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma)).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % PERMITIR DEFINIÇÃO DE FASES DE VACINAÇÃO
@@ -308,39 +349,87 @@ inferencia(Questao, verdadeiro) :- Questao.
 inferencia(Questao, falso) :- -Questao.
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% EVOLUÇÃO E INVOLUÇÃO
+% EXTRA
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-% Extensao do predicado que permite a evolução do conhecimento
-evolucao( Termo ) :-
-    solucoes( Invariante,+Termo::Invariante,Lista ),
-    insercao( Termo ),
-    teste( Lista ).
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% LISTAR VACINACAO
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-insercao( Termo ) :-
-    assert( Termo ).
-insercao( Termo ) :-
-    retract( Termo ),!,fail.
-
-teste( [] ).
-teste( [R|LR] ) :-
-    R,
-    teste( LR ).
-
-
-% Extensao do predicado que permite a involucao do conhecimento
-involucao( Termo ) :-
-    solucoes( Invariante,-Termo::Invariante,Lista ),
-    remocao( Termo ),
-    teste( Lista ).
-
-remocao( Termo ) :-
-    retract( Termo ).
-remocao( Termo ) :-
-    assert( Termo ),!,fail.
+vacinacao :- listing(vacinacao_Covid).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Predicados auxiliares
+% IDENTIFICAR ELEMENTO DO STAFF POR ID
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+staffID(ID,R) :- solucoes((ID,I,N,E), staff(ID,I,N,E), R).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% LISTAR STAFF
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+staffT :- listing(staff).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR CENTRO DE SAUDE POR ID
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+centroID(ID,R) :- solucoes((ID,N,M,T,E), centro_saude(ID,N,M,T,E), R).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% LISTAR CENTRO DE SAUDE
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+centroT :- listing(centro_saude).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR UTENTE POR ID
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+utenteID(ID,R) :- solucoes((ID,Q,No,Da,E,T,M,P,D,C), utente(ID,Q,No,Da,E,T,M,P,D,C), R).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% LISTAR UTENTES
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+utenteT :- listing(utentes).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR FASE DE VACINAÇÃO DE UM UTENTE
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+faseUtente(ID, 'Primeira Fase') :- utentes1fase(L), contains(ID, L).
+faseUtente(ID, 'Segunda Fase') :- utentes2fase(L), contains(ID, L).
+faseUtente(ID, 'Terceira Fase') :- utentes3fase(L), contains(ID, L). 
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR CENTRO DE SAUDE DE UM STAFF
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+centroStaff(ID, Nome) :- staff(ID,ID_Centro,_,_), centro_saude(ID_Centro,Nome,_,_,_).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR VACINAS DADAS POR UM MEMBRO DO STAFF
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+vacinasStaff(ID_Staff,R) :- solucoes(V, vacinacao_Covid(ID_Staff,_,_,_,_,V,_), L), removeRepetidos(L,R). 
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% IDENTIFICAR FREQUENCIA DAS VACINAS
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+
+ocorrencia_vacina(_,[],0).
+ocorrencia_vacina(X,[X|T],Y) :- ocorrencia_vacina(X,T,Z), Y is Z+1.
+ocorrencia_vacina(X,[_|T],Y) :- ocorrencia_vacina(X,T,Y).
+
+vacina_lista([],_,_).
+vacina_lista([H],L2,[(H,Q)]) :- ocorrencia_vacina(H,V,Q).
+vacina_lista([H|T],L2,[(H,Q)|L]) :- ocorrencia_vacina(H,V,Q),vacina_lista(T,V,L).
+
+frequenciaVacinas(R) :- solucoes(V, vacinacao_Covid(_,_,_,_,_,V,_), L), removeRepetidos(L,L2), vacina_lista(L2,L,R).
+
+%--------------------------------- - - - - - - - - - -  -  -  -  -   -
+% PREDICADOS AUXILIARES
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 % Extensao do meta-predicado nao: Questao -> {V,F}
@@ -386,3 +475,6 @@ data(A,M,D) :- M\=2, A>=2010, contains(M,[1,3,5,7,8,10,12]), D>=0, D=<31.
 data(A,M,D) :- M\=2, A>=2010, contains(M,[4,6,9,11]), D>0, D=<30.
 data(A,M,D) :- M==2 , bissexto(A), A>=2010, D>0, D=<29.
 data(A,M,D) :- M==2 , nao(bissexto(A)), A>=2010, D>0, D=<28.
+
+% Extensão do predicado 'telefone': Tel => {V, F}
+telefone(Tel) :- Tel >= 900000000, Tel =< 999999999.
