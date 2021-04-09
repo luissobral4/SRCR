@@ -97,6 +97,7 @@ vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
 	(solucoes((ID_Utente,Toma),vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma),Lista),
 	comprimento(Lista,N), N==1).
 
+
 % Invariante:  nao permite a remoção de conhecimento inexistente
 -utente(ID,_,_,_,_,_,_,_,_,_)::
 	(solucoes(ID,utente(ID,_,_,_,_,_,_,_,_,_),Lista),
@@ -111,7 +112,7 @@ vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
 	comprimento(Lista,N), N==1).
 
 -vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma)::
-	(solucoes((ID_Utente,Toma),vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma),Lista),
+	(solucoes(ID_Utente,vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma),Lista),
 	comprimento(Lista,N), N==1).
 
 
@@ -196,21 +197,32 @@ registaVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- evolucao(vacinacao_
 
 removeUtente(ID) :- vacinasUtente(ID,R), removeVacinasUtente(R), involucao(utente(ID,_,_,_,_,_,_,_,_,_)).
 
-vacinasUtente(ID,R) :- solucoes(ID, (vacinacao_Covid(_,ID,_,_,_,_,_)), R).
+vacinasUtente(ID,R) :- solucoes((ID,Toma), (vacinacao_Covid(_,ID,_,_,_,_,Toma)), R).
 
 removeVacinasUtente([]).
-removeVacinasUtente([ID|T]) :- involucao(vacinacao_Covid(ID_Staff,ID,D,M,A,Vacina,Toma)), removeVacinasUtente(T).
+removeVacinasUtente([(ID,Toma)|T]) :- involucao(vacinacao_Covid(_,ID,_,_,_,_,Toma)), removeVacinasUtente(T).
 
 
-removeCentro(ID) :- staffCentro(ID,R), removeStaffCentro(R), involucao(centro_saude(ID,_,_,_,_)).
+removeCentro(ID) :- staffCentro(ID,L), removeStaffCentro(L), utentesCentro(ID,L2), removeUtentesCentro(L2), involucao(centro_saude(ID,_,_,_,_)).
 
 staffCentro(ID,R) :- solucoes(ID_Staff, (staff(ID_Staff,ID,_,_)), R).
 
+utentesCentro(ID,R) :- solucoes(ID_Utente, (utente(ID_Utente,_,_,_,_,_,_,_,_,ID)), R).
+
 removeStaffCentro([]).
-removeStaffCentro([ID|T]) :- involucao(staff(ID,_,_,_)), removeStaffCentro(T).
+removeStaffCentro([ID|T]) :- vacinasStaff(ID,R), removeVacinasStaff(R), involucao(staff(ID,_,_,_)), removeStaffCentro(T).
+
+removeUtentesCentro([]).
+removeUtentesCentro([ID|T]) :- vacinasUtente(ID,R), removeVacinasUtente(R), involucao(utente(ID,_,_,_,_,_,_,_,_,_)), removeUtentesCentro(T).
 
 
-removeStaff(ID) :- involucao(staff(ID,_,_,_)).
+removeStaff(ID) :- vacinasStaff(ID,R), removeVacinasStaff(R), involucao(staff(ID,_,_,_)).
+
+vacinasStaff(ID,R) :- solucoes((ID_Utente, Toma), (vacinacao_Covid(ID,ID_Utente,_,_,_,_,Toma)), R).
+
+removeVacinasStaff([]).
+removeVacinasStaff([(ID,Toma)|T]) :- involucao(vacinacao_Covid(_,ID,_,_,_,_,Toma)), removeVacinasStaff(T).
+
 
 removeVacina(ID_Utente,Toma) :- involucao(vacinacao_Covid(_,ID_Utente,_,_,_,_,Toma)).
 
@@ -395,7 +407,7 @@ utenteID(ID,R) :- solucoes((ID,Q,No,Da,E,T,M,P,D,C), utente(ID,Q,No,Da,E,T,M,P,D
 % LISTAR UTENTES
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-utenteT :- listing(utentes).
+utenteT :- listing(utente).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % IDENTIFICAR FASE DE VACINAÇÃO DE UM UTENTE
