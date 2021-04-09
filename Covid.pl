@@ -134,6 +134,9 @@ vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
 % Invariante: nao admitir segunda toma da vacina diferente da primeira
 +vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,2):: vacinacao_Covid(_,ID_Utente,_,_,_,Vacina,1).
 
+% Invariante: nao admitir staff e utentes de centros de saude diferentes
++vacinacao_Covid(ID_Staff,ID_Utente,_,_,_,_,_):: mesmoCentro(ID_Staff, ID_Utente).
+
 % Invariante: nao admitir utentes associados um centro de saúde inválido
 +utente(_,_,_,_,_,_,_,_,_,ID_Centro):: (centro_saude(ID_Centro,_,_,_,_)).
 
@@ -232,15 +235,15 @@ removeVacina(ID_Utente,Toma) :- involucao(vacinacao_Covid(_,ID_Utente,_,_,_,_,To
 
 % Extensão do predicado que permite identificar utentes que pertencem à primeira fase de vacinação
 % 'utentes1fase': Resultado -> {V, F}
-utentes1fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios1fase(A,P,L)), R).
+utentes1fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios1fase(A,P,L)), L), removeRepetidos(L,R).
 
 % Extensão do predicado que permite identificar utentes que pertencem à segunda fase de vacinação
 % 'utentes2fase': Resultado -> {V, F}
-utentes2fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios2fase(A,P,L)), R).
+utentes2fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios2fase(A,P,L)), L), removeRepetidos(L,R).
 
 % Extensão do predicado que permite identificar utentes que pertencem à terceira fase de vacinação
 % 'utentes3fase': Resultado -> {V, F}
-utentes3fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios3fase(A,P,L)), R).
+utentes3fase(R) :- solucoes(ID, (utente(ID,_,_,A,_,_,_,P,L,_), criterios3fase(A,P,L)), L), removeRepetidos(L,R).
 
 % Extensão do predicado que permite identificar utentes que foram vacinados na primeira fase
 % 'vacinados1fase': Resultado -> {V, F}
@@ -262,40 +265,40 @@ criterios1fase(Ano,Profissao,LDoencas) :- listaDoencas(LDoencas), 2021 - Ano >= 
 
 % Extensão do predicado que permite identificar criterios da 2ª fase
 % 'criterios2fase': Resultado -> {V, F}
-criterios2fase(Ano,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),2021 - Ano >= 65, 2021 - Ano < 80.
-criterios2fase(Ano,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),listaDoencas2(LDoencas), 2021 - Ano >= 50, 2021 - Ano < 65.
+criterios2fase(Ano,Profissao,LDoencas) :- nao(profissaoRisco(Profissao)), nao(listaDoencas(LDoencas)),2021 - Ano >= 65, 2021 - Ano < 80.
+criterios2fase(Ano,Profissao,LDoencas) :- nao(profissaoRisco(Profissao)), nao(listaDoencas(LDoencas)),listaDoencas2(LDoencas), 2021 - Ano >= 50, 2021 - Ano < 65.
 
 % Extensão do predicado que permite identificar criterios da 3ª fase
 % 'criterios3fase': Resultado -> {V, F}
-criterios3fase(Ano,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), 2021 - Ano < 50.
-criterios3fase(Ano,Profissao,LDoencas) :- not(profissaoRisco(Profissao)), not(listaDoencas(LDoencas)),not(listaDoencas2(LDoencas)), 2021 - Ano >= 50, 2021 - Ano < 65.
+criterios3fase(Ano,Profissao,LDoencas) :- nao(profissaoRisco(Profissao)), 2021 - Ano < 50.
+criterios3fase(Ano,Profissao,LDoencas) :- nao(profissaoRisco(Profissao)), nao(listaDoencas(LDoencas)),nao(listaDoencas2(LDoencas)), 2021 - Ano >= 50, 2021 - Ano < 65.
 
 % Extensão do predicado que permite identificar se uma lista contém uma doença de risco 1
 % 'listaDoencas': Resultado -> {V, F}
-listaDoencas([H|T]) :- doencaRisco(H).
-listaDoencas([H|T]) :- not(doencaRisco(H)), listaDoencas(T).
+listaDoencas([H|_]) :- doencaRisco(H).
+listaDoencas([_|T]) :- listaDoencas(T).
 
 % Extensão do predicado que permite identificar se uma lista contém uma doença de risco 2
-% 'listaDoencas': Resultado -> {V, F}
-listaDoencas2([H|T]) :- doencaRisco2(H).
-listaDoencas2([H|T]) :- not(doencaRisco2(H)), listaDoencas2(T).
+% 'listaDoencas2': Resultado -> {V, F}
+listaDoencas2([H|_]) :- doencaRisco2(H).
+listaDoencas2([_|T]) :- listaDoencas2(T).
 
 % Extensão do predicado que permite identificar se uma doença é de risco 1
-% 'listaDoencas': Resultado -> {V, F}
+% 'doencaRisco': Resultado -> {V, F}
 doencaRisco('Insuficiência cardíaca').
 doencaRisco('Doença coronária').
 doencaRisco('Insuficiência renal').
 doencaRisco('Doença respiratória').
 
 % Extensão do predicado que permite identificar se uma doença é de risco 2
-% 'listaDoencas': Resultado -> {V, F}
+% 'doencaRisco2': Resultado -> {V, F}
 doencaRisco2('Diabetes').
 doencaRisco2('Insuficiência hepática').
 doencaRisco2('Hipertensão arterial').
 doencaRisco2('Obesidade').
 
 % Extensão do predicado que permite identificar se uma profissão é de risco
-% 'listaDoencas': Resultado -> {V, F}
+% 'profissaoRisco': Resultado -> {V, F}
 profissaoRisco('Medico').
 profissaoRisco('Enfermeiro').
 profissaoRisco('Militar').
@@ -342,7 +345,7 @@ utentesInd3(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentes3fase(UF1),v
 
 % Extensão do predicado que permite identificar utentes não vacinados que são candidatos
 % 'utentesNVacinadosCan': Resultado -> {V, F}
-utentesNVacinadosCan(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentesNVacinados(LNV),utentes1fase(L1),utentes2fase(L2),concat(L1,L2,L),contains(ID,L),contains(ID,LNV)), R).
+utentesNVacinadosCan(R) :- solucoes(ID, (utente(ID,_,_,_,_,_,_,_,_,_),utentesNVacinados(LNV),utentes1fase(L1),utentes2fase(L2),concat(L1,L2,L),contains(ID,L),contains(ID,LNV)), L), removeRepetidos(L,R).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % IDENTIFICAR PESSOAS A QUEM FALTA A TOMA DA SEGUNDA VACINA
@@ -427,21 +430,20 @@ centroStaff(ID, Nome) :- staff(ID,ID_Centro,_,_), centro_saude(ID_Centro,Nome,_,
 % IDENTIFICAR VACINAS DADAS POR UM MEMBRO DO STAFF
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-vacinasStaff(ID_Staff,R) :- solucoes(V, vacinacao_Covid(ID_Staff,_,_,_,_,V,_), L), removeRepetidos(L,R). 
+vacinasAdminStaff(ID_Staff,R) :- solucoes(V, vacinacao_Covid(ID_Staff,_,_,_,_,V,_), L), removeRepetidos(L,R). 
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % IDENTIFICAR FREQUENCIA DAS VACINAS
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
-ocorrencia_vacina(_,[],0).
-ocorrencia_vacina(X,[X|T],Y) :- ocorrencia_vacina(X,T,Z), Y is Z+1.
-ocorrencia_vacina(X,[_|T],Y) :- ocorrencia_vacina(X,T,Y).
+frequenciaVacinas(R) :- solucoes(V, vacinacao_Covid(_,_,_,_,_,V,_), L), removeRepetidos(L,L2), vacinaLista(L2,L,R).
 
-vacina_lista([],_,_).
-vacina_lista([H],L2,[(H,Q)]) :- ocorrencia_vacina(H,V,Q).
-vacina_lista([H|T],L2,[(H,Q)|L]) :- ocorrencia_vacina(H,V,Q),vacina_lista(T,V,L).
+vacinaLista([],_,[]).
+vacinaLista([H|T],V,[(H,Q)|L]) :- ocorrenciaVacina(H,V,0,Q),vacinaLista(T,V,L).
 
-frequenciaVacinas(R) :- solucoes(V, vacinacao_Covid(_,_,_,_,_,V,_), L), removeRepetidos(L,L2), vacina_lista(L2,L,R).
+ocorrenciaVacina(_, [], Acc, Acc).
+ocorrenciaVacina(X, [X|T], OldAcc, Res) :- NewAcc is OldAcc + 1, ocorrenciaVacina(X, T, NewAcc, Res).
+ocorrenciaVacina(X, [_|T], Acc, Res) :- ocorrenciaVacina(X, T, Acc, Res).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % PREDICADOS AUXILIARES
@@ -473,7 +475,7 @@ concat([H|T], L, R) :- add(H, N, R), concat(T, L, N).
 solucoes( X,Y,Z ) :-
     findall( X,Y,Z ).
 
-% Extensão do predicado 'solucoes'
+% Extensão do predicado 'comprimento'
 comprimento( S,N ) :-
     length( S,N ).
 
@@ -493,3 +495,6 @@ data(A,M,D) :- M==2 , nao(bissexto(A)), A>=2010, D>0, D=<28.
 
 % Extensão do predicado 'telefone': Tel => {V, F}
 telefone(Tel) :- Tel >= 900000000, Tel =< 999999999.
+
+% Extensão do predicado 'mesmoCentro': ID_Staff, ID_Utente => {V, F}
+mesmoCentro(ID_Staff, ID_Utente) :- staff(ID_Staff,ID_Centro,_,_), utente(ID_Utente,_,_,_,_,_,_,_,_,ID_Centro).
