@@ -8,27 +8,11 @@
 % Definicoes iniciais
 
 :- op( 900,xfy,'::' ).
-:- op(900, xfy, ':::').
-:- dynamic '::'/2.
-:- dynamic ':::'/2.
-:- dynamic excecao/1.
-:- dynamic '-'/1.
 :- dynamic utente/10.
 :- dynamic centro_saude/5.
 :- dynamic staff/4.
 :- dynamic vacinacao_Covid/7.
 :- dynamic data/3.
-:- dynamic emailIncertoUtente/1.
-:- dynamic moradaIncertaUtente/1.
-:- dynamic profissaoImprecisaUtente/1.
-:- dynamic dataNascimentoImprecisaUtente/1.
-:- dynamic nomeIncertoCentro/1.
-:- dynamic emailImprecisoCentro/1.
-:- dynamic emailIncertoStaff/1.
-:- dynamic emailImprecisoStaff/1.
-:- dynamic diaIncertoVacinacao/2.
-:- dynamic staffImprecisoVacinacao/2.
-:- dynamic nulo/1.
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % POVOAMENTO
@@ -45,35 +29,19 @@ utente(6,41454355,'Paulo',1980,'p@gmail.com',936738461,'Esposende','Medico',[],2
 utente(7,75355655,'Beatriz',1995,'b@gmail.com',936973645,'Aveiro','Enfermeiro',[],2).
 utente(8,43455692,'Maria',1951,'m@gmail.com',912348248,'Braga','Estudante',[],2).
 utente(9,42487435,'Carlos',1983,'c@gmail.com',936827634,'Aveiro','Estudante',['Artroses'],2).
-utente(10,12345678,'Antonio',2000,email_desc,965269469,'Viana Castelo','Estudante',[],1).
-utente(11,87654321,'Ricardo', 1983,'ri@gmail.com',965269477,morada_Desc,'Padeiro',[],1).
+utente(10,12345678,'Antonio', 2000,email_desc,965269469,morada_Desc,'Estudante',[],1).
+utente(11,87654321,'Ricardo', 1983,email_desc,965269477,morada_Desc,'Padeiro',[],1).
 utente(12,13243546,'Bruno', 1993,email_desc,965233333,'Portimao','Ferreiro',[],2).
 utente(13,86756453,'Fernando', 1989,'f@gmail.com',967269477,morada_Desc,'Motorista',[],3).
-utente(16,56789321,'Vasco',1957,email_interdito,912345679,'Porto','Contabilista',['Artroses'],3).
-utente(17,nss_interdito,'Evaristo',1976,'e@gmail.com',922222222,'Leixoes','Pedreiro',[],2).
+utente(15,56789123,'Nuno',data_nasc,'n@gmail.com',912345678,'Albufeira','Mecanico',[],1).
+utente(16,56789321,'Vasco',1957,email_interdito,912345678,'Porto','Contabilista',['Artroses'],3).
 
--utente(10,12345678,'Antonio',2000,'antonio@gmail.com',965269469,'Viana Castelo','Estudante',[],1).
-
-%-------------------------------------------------
-% Aplicação da negação forte para o predicado utente
--utente(ID, NSS, Nome, Data_Nasc, Email, Telefone, Morada, Profissao, LDoencas, Centro_Saude) :-
-    nao(utente(ID, NSS, Nome, Data_Nasc, Email, Telefone, Morada, Profissao, LDoencas, Centro_Saude)),
-    nao(excecao(utente(ID, NSS, Nome, Data_Nasc, Email, Telefone, Morada, Profissao, LDoencas, Centro_Saude))).
 
 % Extensao do predicado 'centro_saude' : ID Centro, Nome, Morada, Telefone,
 % Email -> {V,F}
-centro_saude(1,'BragaH','Braga',999999999,'bragah@gmail.com').
-centro_saude(2,'GuimaraesH','Guimaraes',999999998,'guimaraesh@gmail.com').
-centro_saude(3,nome_desc,'Viseu',999999997,'viseuh@gmail.com').
-
--centro_saude(3,'HViseu','Viseu',999999997,'viseuh@gmail.com').
-
-%-------------------------------------------------
-% Aplicação do PMF para o predicado centro_saude
-
--centro_saude(ID, Nome, Morada, Telefone, Email) :-
-    nao(centro_saude(ID, Nome, Morada, Telefone, Email)),
-    nao(excecao(centro_saude(ID, Nome, Morada, Telefone, Email))).
+centro_saude(1,'BragaH','Braga','999999999','bragah@gmail.com').
+centro_saude(2,'GuimaraesH','Guimaraes','999999998','guimaraesh@gmail.com').
+centro_saude(3,nome_desc,'Viseu','999999997','viseuh@gmail.com').
 
 % Extensao do predicado 'staff' : ID staff, ID Centro, Nome, Email -> {V,F}
 staff(1,1,'Luis','luis@gmail.com').
@@ -82,53 +50,36 @@ staff(3,1,'Francisco','francisco@gmail.com').
 staff(4,2,'Joao','joao@gmail.com').
 staff(5,3,'Xavier',email_desc).
 
-%-------------------------------------------------
-% Aplicação do PMF para o predicado staff
-
--staff(ID_Staff, ID_Centro, Nome, Email) :-
-    nao(staff(ID_Staff, ID_Centro, Nome, Email)),
-    nao(excecao(staff(ID_Staff, ID_Centro, Nome, Email))).
-
 % Conhecimento imperfeito incerto para o predicado utente
 
+excecao(utente(ID,SS,Nome,Data_Nasc,_,Telefone,_,Profissao,LDoencas,Centro_Saude)) :- utente(ID,SS,Nome,Data_Nasc,email_desc,Telefone,morada_Desc,Profissao,LDoencas,Centro_Saude).
 excecao(utente(ID,SS,Nome,Data_Nasc,_,Telefone,Morada,Profissao,LDoencas,Centro_Saude)) :- utente(ID,SS,Nome,Data_Nasc,email_desc,Telefone,Morada,Profissao,LDoencas,Centro_Saude).
-emailIncertoUtente(10).
-emailIncertoUtente(12).
-
 excecao(utente(ID,SS,Nome,Data_Nasc,Email,Telefone,_,Profissao,LDoencas,Centro_Saude)) :- utente(ID,SS,Nome,Data_Nasc,Email,Telefone,morada_Desc,Profissao,LDoencas,Centro_Saude).
-moradaIncertaUtente(11).
-moradaIncertaUtente(13).
 
 % Conhecimento imperfeito incerto para o predicado centro_saude
 
 excecao(centro_saude(ID,_,Morada,Telefone,Email)) :- centro_saude(ID,nome_desc,Morada,Telefone,Email).
-nomeIncertoCentro(3).
 
 % Conhecimento imperfeito incerto para o predicado staff
 
 excecao(staff(ID, Centro, Nome,_)) :- staff(ID, Centro, Nome, email_desc).
-emailIncertoStaff(5).
 
 % Conhecimento impreciso para o predicado utente
 
-excecao(utente(14,65748392,'Tiago',1990,'t@gmail.com',925434567,'Tomar','Canalizador',[],2)).
-excecao(utente(14,65748392,'Tiago',1990,'t@gmail.com',925434567,'Tomar','Eletricista',[],2)).
-profissaoImprecisaUtente(14).
+excecao(utente(14,65748392,'Tiago',1990,'t@gmail.com',92543456,'Tomar','Canalizador',[],2)).
+excecao(utente(14,65748392,'Tiago',1990,'t@gmail.com',92543456,'Tomar','Eletricista',[],2)).
 
-excecao(utente(15,56789123,'Nuno',Data,'n@gmail.com',912345678,'Albufeira','Mecanico',[],1)) :-  integer(Data), Data >= 1960, Data =< 1965.
-dataNascimentoImprecisaUtente(15).
+excecao(utente(15,56789123,'Nuno',Data,'n@gmail.com',912345678,'Albufeira','Mecanico',[],1)) :- Data >= 1960, Data <= 1965, nat(Data).
 
 % Conhecimento impreciso para o predicado centro_saude
 
-excecao(centro_saude(4,'GuardaH','Guarda',999999996,'guardah@gmail.com')).
-excecao(centro_saude(4,'GuardaH','Guarda',999999996,'hguarda@gmail.com')).
-emailImprecisoCentro(4).
+excecao(centro_saude(4,'GuardaH','Guarda','999999996','guardah@gmail.com')).
+excecao(centro_saude(4,'GuardaH','Guarda','999999996','hguarda@gmail.com')).
 
 % Conhecimento impreciso para o predicado staff
 
 excecao(staff(6,1,'Bernardo','bernardo@gmail.com')).
 excecao(staff(6,1,'Bernardo','bern@gmail.com')).
-emailImprecisoStaff(6).
 
 % Conhecimento interdito para o predicado utente
 
@@ -139,14 +90,6 @@ nulo(email_interdito).
                                  nao( nulo(Email))), S),
                                  comprimento(S, N),
                                  N == 0).
-
-excecao(utente(ID,_,Nome,Data_Nasc,Email,Telefone,Morada,Profissao,LDoencas,Centro_Saude)) :- utente(ID,nss_interdito,Nome,Data_Nasc,Email,Telefone,Morada,Profissao,LDoencas,Centro_Saude).
-
-nulo(nss_interdito).
-+utente(_,_,_,_,_,_,_,_,_,_) :: (solucoes( NSS, (utente(17,NSS,'Evaristo',1976,'e@gmail.com',922222222,'Leixoes','Pedreiro',[],2),
-								nao( nulo(NSS))), S),
-								comprimento(S, N),
-								N == 0).
 
 % Extensao do predicado 'vacinacao_Covid' : ID staff, ID Utente, Data, Vacina, Toma -> {V,F}
 % Utente 1 - 2 vacinas fase 1
@@ -159,26 +102,6 @@ vacinacao_Covid(1, 4, 14, 12, 2021, 'Moderna', 2).
 vacinacao_Covid(4, 6, 12, 2, 2021, 'PFizer', 1).
 vacinacao_Covid(4, 6, 12, 3, 2021, 'PFizer', 2).
 vacinacao_Covid(2, 7, 1, 3, 2021, 'AstraZeneca', 2).
-
--vacinacao_Covid(2, 9, 1, 6, 2021, 'PFizer', 1).
-
-%-------------------------------------------------
-% Aplicação do PMF para o predicado vacinacao_Covid
-
--vacinacao_Covid(ID_Staff, ID_Utente, Dia, Mes, Ano, Vacina, Toma) :-
-    nao(vacinacao_Covid(ID_Staff, ID_Utente, Dia, Mes, Ano, Vacina, Toma)),
-    nao(excecao(vacinacao_Covid(ID_Staff, ID_Utente, Dia, Mes, Ano, Vacina, Toma))).
-
-% Conhecimento imperfeito incerto para o predicado vacinacao_Covid
-
-excecao(vacinacao_Covid(2, 9, Dia, 6, 2021, 'PFizer',1)) :- integer(Dia), Dia >= 1, Dia =< 31.
-diaIncertoVacinacao(2,9).
-
-% Conhecimento imperfeito impreciso para o predicado vacinacao_Covid
-
-excecao(vacinacao_Covid(ID_Staff, 11, 2, 4, 2021, 'AstraZeneca', 1)) :- contains(ID_Staff, [1, 3]).
-staffImprecisoVacinacao(1,11).
-staffImprecisoVacinacao(3,11).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % INVARIANTES
@@ -227,9 +150,9 @@ staffImprecisoVacinacao(3,11).
 
 
 % Invariante:  nao permite a remoção de conhecimento inexistente
--utente(ID,_,_,_,_,_,_,_,_,_)::
-	(solucoes(ID,utente(ID,_,_,_,_,_,_,_,_,_),Lista),
-	comprimento(Lista,N), N==1).
+%-utente(ID,_,_,_,_,_,_,_,_,_)::
+%	(solucoes(ID,utente(ID,_,_,_,_,_,_,_,_,_),Lista),
+%	comprimento(Lista,N), N==1).
 
 -centro_saude(ID,_,_,_,_)::
 	(solucoes(ID,centro_saude(ID,_,_,_,_),Lista),
@@ -323,7 +246,7 @@ remocao( Termo ) :-
     assert( Termo ),!,fail.
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% ADIÇÃO DE CONHECIMENTO PERFEITO
+% ADIÇÃO DE CONHECIMENTO
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
@@ -333,132 +256,6 @@ registaCentro(ID,N,M,T,E) :- evolucao(centro_saude(ID,N,M,T,E)).
 registaStaff(ID,IdCentro,Nome,Email) :- evolucao(staff(ID,IdCentro,Nome,Email)).
 
 registaVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- evolucao(vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)).
-
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% ADIÇÃO DE CONHECIMENTO IMPERFEITO
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-
-registaUtenteMoradaIncerta(ID, NSS, Nome, Data, Email, Telefone, Profissao, LDoencas, Centro) :- evolucaoMoradaIncerta(utente(ID, NSS, Nome, Data, Email, Telefone, morada_Desc,Profissao, LDoencas, Centro)).
-
-evolucaoMoradaIncerta(utente(ID, NSS, Nome, Data, Email, Telefone, morada_Desc,Profissao, LDoencas, Centro)) :- evolucaoDesconhecido(utente(ID, NSS, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro)), assert(moradaIncertaUtente(ID)).
-
-registaStaffEmailImpreciso(ID, Centro, Nome,[Email|T]) :- evolucaoEmailImpreciso(staff(ID, Centro, Nome, [Email|T])), assert( emailImprecisoStaff(ID) ).
-
-evolucaoEmailImpreciso(staff(ID, Centro, Nome, [])).
-evolucaoEmailImpreciso(staff(ID, Centro, Nome,[Email|T])) :- obtemInvariantes(excecao(staff(ID, Centro, Nome,Email)), LI1, LI2),
-					  insercao(excecao(staff(ID, Centro, Nome,Email))), teste( LI1 ), teste( LI2 ),
-					  evolucaoEmailImpreciso( staff(ID, Centro, Nome,T)).
-
-registaCentroNomeIncerto(ID,Morada,Telefone,Email) :- evolucaoNomeIncerto(centro_saude(ID,nome_desc,Morada,Telefone,Email)).
-
-evolucaoNomeIncerto(centro_saude(ID,nome_desc,Morada,Telefone,Email)) :- evolucaoDesconhecido(centro_saude(ID,Nome,Morada,Telefone,Email)), assert(nomeIncertoCentro(ID)).
-
-registaUtenteNSSInterdito(ID, NSS, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro) :- nao(integer(NSS)), evolucaoNSSInterdito(utente(ID, NSS, Nome, Data, Email, Telefone, Morada,Profissao, LDoencas, Centro)).
-
-evolucaoNSSInterdito(utente(ID, NSSInterdito, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro)) :- 
-					obtemInvariantes(utente(ID, NSSInterdito, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro), LI1, LI2),
-					insercao(utente(ID, NSSInterdito, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro)), teste(LI1), teste(LI2),
-					assert(nulo(NSSInterdito)),
-					assert((excecao(utente(ID1, NSS1, Nome1, Data1, Email1, Telefone1, Morada1, Profissao1, LDoencas1, Centro1)) :- utente(ID1, NSSinterdito, Nome1, Data1, Email1, Telefone1, Morada1, Profissao1, LDoencas1, Centro1))),
-					assert((+utente(ID1, NSS1, Nome1, Data1, Email1, Telefone1, Morada1, Profissao1, LDoencas1, Centro1) :: (solucoes(NSS1, (utente(ID, NSS1, Nome, Data, Email, Telefone, Morada, Profissao, LDoencas, Centro), nao(nulo(NSS1))), S), comprimento(S, 0)))).
-
-evolucaoDesconhecido(Termo) :-
-	obtemInvariantes( Termo, LI1, LI2),
-	insercao(Termo),
-	teste( LI1 ), teste( LI2 ).
-
-obtemInvariantes(Termo, LI1, LI2) :-
-	solucoes(Invariante, +Termo:::Invariante, LI1),
-	solucoes(Invariante, +Termo::Invariante, LI2).
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% PERMITE PASSAR CONHECIMENTO INCERTO E IMPRECISO A CONHECIMENTO PERFEITO
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-
-removeExcecoes([]).
-removeExcecoes([H|T]) :- involucao(H), removeExcecoes(T).
-
-% Adicionar Email Utente (incerto)
-registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- emailIncertoUtente(ID),
-											 involucao(utente(ID,Q,Nome,Data,email_desc,T,M,P,D,C)),
-											 involucao(emailIncertoUtente(ID)),
-											 evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
-
-% Adicionar Morada Utente (incerto)
-registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- moradaIncertaUtente(ID),
-											 involucao(utente(ID,Q,Nome,Data,E,T,morada_Desc,P,D,C)),
-											 involucao(moradaIncertaUtente(ID)),
-											 evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
-
-% Adicionar Profissao Utente (impreciso)
-registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- profissaoImprecisaUtente(ID),
-											 solucoes(excecao(utente(ID,Q,Nome,Data,E,T,M,Ps,D,C)), (excecao(utente(ID,Q,Nome,Data,E,T,M,Ps,D,C))), R), 
-											 comprimento(R,N), N>0, removeExcecoes(R),
-											 evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
-
-% Adicionar Data Nascimento Utente (impreciso)
-registaUtente(ID,Q,Nome,Data,E,T,M,P,D,C) :- dataNascimentoImprecisaUtente(ID),
-											 solucoes(excecao(utente(ID,Q,Nome,Datas,E,T,M,P,D,C)), (excecao(utente(ID,Q,Nome,Datas,E,T,M,P,D,C))), R), 
-											 comprimento(R,N), N>0, removeExcecoes(R),
-											 evolucao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)).
-
-% Adicionar Nome Centro Saude (incerto)
-registaCentro(ID,N,M,T,E) :- nomeIncertoCentro(ID),
-							 involucao(centro_saude(ID,nome_desc,M,T,E)),
-							 involucao(nomeIncertoCentro(ID)),
-							 evolucao(centro_saude(ID,N,M,T,E)).
-
-% Adicionar Email Centro Saude (impreciso)
-registaCentro(ID,N,M,T,E) :- emailImprecisoCentro(ID),
-							 solucoes(excecao(centro_saude(ID,N,M,T,Es)), excecao(centro_saude(ID,N,M,T,Es)), R),
-							 comprimento(R,N), N>0, removeExcecoes(R),
-							 evolucao(centro_saude(ID,N,M,T,E)).
-
-% Adicionar Email Staff (incerto)
-registaStaff(ID,IdCentro,Nome,Email) :- emailIncertoStaff(ID),
-										involucao(staff(ID,IdCentro,Nome,email_desc)),
-										involucao(emailIncertoStaff(ID)),
-										evolucao(staff(ID,IdCentro,Nome,Email)).
-
-% Adicionar Email Staff (impreciso)
-registaStaff(ID,IdCentro,Nome,Email) :- emailImprecisoStaff(ID),
-										solucoes(excecao(staff(ID,IdCentro,Nome,Emails)), excecao(staff(ID,IdCentro,Nome,Emails)), R),
-										comprimento(R,N), N>0, removeExcecoes(R),
-										involucao(emailImprecisoStaff(ID)),
-										evolucao(staff(ID,IdCentro,Nome,Email)).
-
-% Adicionar Dia da administracao da Vacina (impreciso)
-registaVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- diaIncertoVacinacao(ID_Staff, ID_Utente),
-															 solucoes(excecao(vacinacao_Covid(ID_Staff,ID_Utente,Dias,Mes,Ano,Vacina,Toma)), excecao(vacinacao_Covid(ID_Staff,ID_Utente,Dias,Mes,Ano,Vacina,Toma)), R),
-															 comprimento(R,N), N>0, removeExcecoes(R),
-															 evolucao(vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)).
-
-% Adicionar Staff à administracao da Vacina (impreciso)
-registaVacina(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma) :- staffImprecisoVacinacao(ID_Staff,ID_Utente),
-															 solucoes(excecao(vacinacao_Covid(ID_Staffs,ID_Utente,Dia,Mes,Ano,Vacina,Toma)), excecao(vacinacao_Covid(ID_Staffs,ID_Utente,Dia,Mes,Ano,Vacina,Toma)), R),
-															 comprimento(R,N), N>0, removeExcecoes(R),
-															 solucoes(staffImprecisoVacinacao(ID_Staff, ID_Utente), staffImprecisoVacinacao(ID_Staff, ID_Utente), Res), comprimento(Res, Size), Size>0, removeExcecoes(Res),
-															 evolucao(vacinacao_Covid(ID_Staff,ID_Utente,Dia,Mes,Ano,Vacina,Toma)).
-
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% INVARIANTES DE CONHECIMENTO IMPERFEITO
-%--------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Nao e permitido adicionar conhecimento imperfeito a factos que ja sao caracterizados como imperfeito
-
-+utente(ID,Q,Nome,Data,E,T,M,P,D,C) ::: nao(nulo(Q)).
-
-+excecao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)) ::: nao(nulo(Q)).
-
-+utente(ID,Q,Nome,Data,E,T,M,P,D,C) ::: nao(moradaIncertaUtente(ID)).
-
-+excecao(utente(ID,Q,Nome,Data,E,T,M,P,D,C)) ::: nao(moradaIncertaUtente(ID)).
-
-+centro_saude(ID, Nome, Morada, Telefone, Email) ::: nao(nomeIncertoCentro(ID)).
-
-+excecao(centro_saude(ID, Nome, Morada, Telefone, Email)) ::: nao(nomeIncertoCentro(ID)).
-
-+staff(ID, Centro, Nome, Email) ::: nao(emailImprecisoStaff(ID)).
-
-+excecao(staff(ID, Centro, Nome, Email)) ::: nao(emailImprecisoStaff(ID)).
 
 %--------------------------------- - - - - - - - - - -  -  -  -  -   -
 % REMOÇÃO DE CONHECIMENTO
@@ -726,7 +523,8 @@ contains(E,[Y|T]) :- E\=Y, contains(E,T).
 
 % Extensão do predicado que permite verificar se um numero é natural:
 % 'natural':  Numero -> {V,F}
-natural(N) :- M is N mod 1, M == 0, N > 0.
+natural(1).
+natural(N) :- M is N-1 , natural(M).
 
 % Extensao do predicado «adicionar» que insere um elemento numa lista, sem o repetir: Elemento,Lista,Resultado -> {V,F}
 add(E,L,L) :- contains(E,L).
